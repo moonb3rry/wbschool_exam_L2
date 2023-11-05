@@ -1,5 +1,11 @@
 package main
 
+import (
+	"fmt"
+	"github.com/beevik/ntp"
+	"log"
+)
+
 /*
 === Базовая задача ===
 
@@ -12,6 +18,13 @@ package main
 Программа должна проходить проверки go vet и golint.
 */
 
-func main() {
+const address = "0.beevik-ntp.pool.ntp.org"
+const layout = "Mon, 2 Jan 2006 15:04:05 MST"
 
+func main() {
+	t, err := ntp.Time(address)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(t.Format(layout))
 }
