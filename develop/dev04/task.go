@@ -1,5 +1,10 @@
 package main
 
+import (
+	"sort"
+	"strings"
+)
+
 /*
 === Поиск анаграмм по словарю ===
 
@@ -19,6 +24,52 @@ package main
 Программа должна проходить все тесты. Код должен проходить проверки go vet и golint.
 */
 
-func main() {
+// sortRunes - вспомогательная функция для сортировки рун в строке.
+func sortRunes(str string) string {
+	r := []rune(str)
+	sort.Slice(r, func(i, j int) bool {
+		return r[i] < r[j]
+	})
+	return string(r)
+}
 
+// findAnagrams - функция для поиска анаграмм.
+func findAnagrams(words []string) map[string][]string {
+	anagrams := make(map[string][]string)
+	seen := make(map[string]string)
+
+	for _, word := range words {
+		wordLower := strings.ToLower(word) // Приведение слова к нижнему регистру
+		sortedWord := sortRunes(wordLower) // Сортировка рун в слове
+
+		if key, found := seen[sortedWord]; found {
+			// Если слово-анаграмма уже было найдено, добавляем его в массив по ключу
+			anagrams[key] = append(anagrams[key], wordLower)
+		} else {
+			// Иначе, создаем новый ключ для этой анаграммы
+			seen[sortedWord] = wordLower
+			anagrams[wordLower] = []string{wordLower}
+		}
+	}
+
+	// Удаление множеств анаграмм, содержащих только одно слово
+	for key, group := range anagrams {
+		if len(group) < 2 {
+			delete(anagrams, key)
+		} else {
+			sort.Strings(anagrams[key]) // Сортировка множеств анаграмм
+		}
+	}
+
+	return anagrams
+}
+
+func main() {
+	// Пример использования функции findAnagrams.
+	dictionary := []string{"пятак", "пятка", "тяпка", "листок", "слиток", "столик", "кирпич"}
+	anagrams := findAnagrams(dictionary)
+
+	for key, group := range anagrams {
+		println(key, ":", strings.Join(group, ", "))
+	}
 }

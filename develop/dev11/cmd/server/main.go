@@ -1,5 +1,11 @@
 package main
 
+import (
+	"dev11/dev11/internal/app/handlers"
+	"log"
+	"net/http"
+)
+
 /*
 === HTTP server ===
 
@@ -23,5 +29,16 @@ package main
 */
 
 func main() {
+	http.HandleFunc("/create_event", handlers.CreateEventHandler)
+	http.HandleFunc("/update_event", handlers.UpdateEventHandler)
+	http.HandleFunc("/events_for_day", handlers.GetEventsForDayHandler)
+	http.HandleFunc("/events_for_week", handlers.GetEventsForWeekHandler)
+	http.HandleFunc("/events_for_month", handlers.GetEventsForMonthHandler)
+	http.HandleFunc("/delete_event", handlers.DeleteEventHandler)
 
+	// Запуск сервера
+	log.Println("Starting server on :8080")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal(err)
+	}
 }
